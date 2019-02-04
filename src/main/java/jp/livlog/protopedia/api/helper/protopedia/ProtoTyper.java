@@ -108,7 +108,7 @@ public final class ProtoTyper {
     public static ProtoTypeDetailData getDetail(final String protoTypeId) throws Exception {
 
         // 返り値
-        final ProtoTypeDetailData data = new ProtoTypeDetailData();
+        ProtoTypeDetailData data = null;
 
         // 指定のURLを生成
         final String protoUrl = SUGGETS_URL + "/prototype/" + protoTypeId;
@@ -125,6 +125,8 @@ public final class ProtoTyper {
         final Elements teamname = document.getElementsByClass("field--name-field-teamname");
         final Elements team = document.getElementsByClass("field--name-field-team");
         final Elements wow = document.getElementsByClass("field--name-field-wow");
+
+        data = new ProtoTypeDetailData();
         // タイトル
         if (!title.isEmpty()) {
             final String titleText = title.get(0).text();
