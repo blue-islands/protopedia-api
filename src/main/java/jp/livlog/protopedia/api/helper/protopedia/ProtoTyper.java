@@ -1,7 +1,9 @@
 package jp.livlog.protopedia.api.helper.protopedia;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +29,11 @@ public final class ProtoTyper {
      * URL.
      */
     private static final String SUGGETS_URL = "https://protopedia.net";
+
+    /**
+     * メンバー取得用の.
+     */
+    private static final int    MEMBER_SKIP = 3;
 
 
     /**
@@ -89,6 +96,100 @@ public final class ProtoTyper {
         }
 
         return list;
+    }
+
+
+    /**
+     * プロトタイプ詳細情報を取得する.
+     * @param protoTypeId プロトタイプID
+     * @return プロトタイプ情報
+     * @throws Exception 例外
+     */
+    public static ProtoTypeDetailData getDetail(final String protoTypeId) throws Exception {
+
+        // 返り値
+        final ProtoTypeDetailData data = new ProtoTypeDetailData();
+
+        // 指定のURLを生成
+        final String protoUrl = SUGGETS_URL + "/prototype/" + protoTypeId;
+        log.log(Level.INFO, protoUrl);
+
+        // プロトタイプ一覧を取得
+        final Document document = Jsoup.connect(protoUrl).get();
+        final Elements title = document.getElementsByTag("h1");
+        final Elements status = document.getElementsByClass("field--name-field-status");
+        final Elements summary = document.getElementsByClass("field--type-text-with-summary");
+        final Elements materials = document.getElementsByClass("field--name-field-materials");
+        final Elements tags = document.getElementsByClass("field--name-field-prototype-tags");
+        final Elements url = document.getElementsByClass("field--name-field-url");
+        final Elements teamname = document.getElementsByClass("field--name-field-teamname");
+        final Elements team = document.getElementsByClass("field--name-field-team");
+        final Elements wow = document.getElementsByClass("field--name-field-wow");
+        // タイトル
+        if (!title.isEmpty()) {
+            final String titleText = title.get(0).text();
+            data.setTitle(titleText);
+        }
+        // ステータス
+        if (!status.isEmpty()) {
+            final String statusText = status.get(0).text();
+            data.setStatus(statusText);
+        }
+        // Body
+        if (!summary.isEmpty()) {
+            final String summaryHtml = summary.get(0).html();
+            data.setBody(summaryHtml);
+        }
+        // API・素材等
+        if (!materials.isEmpty()) {
+            final Elements materialItems = materials.get(0).getElementsByClass("field__item");
+            final List <String> materialList = new ArrayList <>();
+            for (final Element materialItem : materialItems) {
+                materialList.add(materialItem.text());
+            }
+            data.setMaterials(materialList);
+        }
+        // タグ
+        if (!tags.isEmpty()) {
+            final Elements tagItems = tags.get(0).getElementsByClass("field__item");
+            final List <String> tagList = new ArrayList <>();
+            for (final Element tagItem : tagItems) {
+                tagList.add(tagItem.text());
+            }
+            data.setTags(tagList);
+        }
+
+        // URL
+        if (!url.isEmpty()) {
+            data.setUrl(url.get(0).text());
+        }
+        // チーム名
+        if (!teamname.isEmpty()) {
+            final Elements teamnameItem = teamname.get(0).getElementsByClass("field__item");
+            if (!teamnameItem.isEmpty()) {
+                data.setTeamname(teamnameItem.get(0).text());
+            }
+        }
+        // チーム
+        if (!team.isEmpty()) {
+            final Elements member = team.get(0).getElementsByClass("field__item");
+            final Map <String, String> memberMap = new LinkedHashMap <>();
+            for (int i = 0; i < member.size(); i = i + MEMBER_SKIP) {
+                final Element name = member.get(i + 1);
+                final Element part = member.get(i + 2);
+                memberMap.put(name.text(), part.text());
+            }
+            data.setTeam(memberMap);
+        }
+        // Wow
+        if (!wow.isEmpty()) {
+            final Elements wowItem = wow.get(0).getElementsByClass("field__item");
+            if (!wowItem.isEmpty()) {
+                data.setWow(wowItem.get(0).text());
+            }
+        }
+
+        return data;
     }
 
 }

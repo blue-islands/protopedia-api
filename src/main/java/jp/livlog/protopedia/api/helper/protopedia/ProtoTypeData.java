@@ -1,4 +1,3 @@
-
 package jp.livlog.protopedia.api.helper.protopedia;
 
 import lombok.Data;

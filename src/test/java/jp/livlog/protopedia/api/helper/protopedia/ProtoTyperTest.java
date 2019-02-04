@@ -8,7 +8,7 @@ import org.junit.Test;
 public class ProtoTyperTest {
 
     @Test
-    public void test() {
+    public void testList() {
 
         try {
 
@@ -27,6 +27,23 @@ public class ProtoTyperTest {
                 System.out.println(data);
             }
 
+        } catch (final Exception e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
+
+    }
+
+
+    @Test
+    public void testDetail() {
+
+        ProtoTypeDetailData data = null;
+        try {
+            data = ProtoTyper.getDetail("c88d8d0a6097754525e02c2246d8d27f");
+            System.out.println(data);
+            data = ProtoTyper.getDetail("38913e1d6a7b94cb0f55994f679f5956");
+            System.out.println(data);
         } catch (final Exception e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
