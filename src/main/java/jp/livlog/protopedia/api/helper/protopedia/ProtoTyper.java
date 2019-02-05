@@ -32,11 +32,6 @@ public final class ProtoTyper {
     private static final String SUGGETS_URL = "https://protopedia.net";
 
     /**
-     * メンバー取得用のスキップ.
-     */
-    private static final int    MEMBER_SKIP = 3;
-
-    /**
      * 検索用のスキップ.
      */
     private static final int    SEARCH_SKIP = 3;
@@ -194,12 +189,19 @@ public final class ProtoTyper {
         }
         // チーム
         if (!team.isEmpty()) {
-            final Elements member = team.get(0).getElementsByClass("field__item");
+
+            final Elements paragraphs = team.get(0).getElementsByClass("paragraph--type--paragraphs-team");
             final Map <String, String> memberMap = new LinkedHashMap <>();
-            for (int i = 0; i < member.size(); i = i + MEMBER_SKIP) {
-                final Element name = member.get(i + 1);
-                final Element part = member.get(i + 2);
-                memberMap.put(name.text(), part.text());
+            for (final Element paragraph : paragraphs) {
+                final Elements prototyper = paragraph.getElementsByClass("field--name-field-prototyper");
+                final Elements role = paragraph.getElementsByClass("field--name-field-roles");
+                final Elements prototyperItem = prototyper.get(0).getElementsByClass("field__item");
+                if (role.toString().length() > 0) {
+                    final Elements roleItem = role.get(0).getElementsByClass("field__item");
+                    memberMap.put(prototyperItem.get(0).text(), roleItem.get(0).text());
+                } else {
+                    memberMap.put(prototyperItem.get(0).text(), "");
+                }
             }
             data.setTeam(memberMap);
         }
