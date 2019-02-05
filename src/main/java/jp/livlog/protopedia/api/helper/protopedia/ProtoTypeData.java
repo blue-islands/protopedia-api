@@ -11,6 +11,9 @@ import lombok.Data;
 @Data
 public class ProtoTypeData {
 
+    /** プロトタイプID. */
+    private String protoTypeId;
+
     /** タイトル. */
     private String title;
 

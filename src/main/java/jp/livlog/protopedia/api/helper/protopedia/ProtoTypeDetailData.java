@@ -1,6 +1,5 @@
 package jp.livlog.protopedia.api.helper.protopedia;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -15,14 +14,23 @@ import lombok.Data;
 @Data
 public class ProtoTypeDetailData {
 
+    /** プロトタイプID. */
+    private String               protoTypeId;
+
     /** タイトル. */
     private String               title;
 
     /** ステータス. */
     private String               status;
 
-    /** Body. */
-    private String               body;
+    /** Body(HTML). */
+    private String               bodyHtml;
+
+    /** Body(テキスト). */
+    private String               bodyText;
+
+    /** イメージ. */
+    private List <String>        images;
 
     /** API・素材等. */
     private List <String>        materials;
@@ -43,5 +51,5 @@ public class ProtoTypeDetailData {
     private String               wow;
 
     /** 登録日時. */
-    private Date                 timestamp;
+    private String               timestamp;
 }

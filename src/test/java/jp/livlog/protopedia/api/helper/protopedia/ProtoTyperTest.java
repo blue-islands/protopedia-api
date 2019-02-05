@@ -50,4 +50,17 @@ public class ProtoTyperTest {
         }
     }
 
+
+    @Test
+    public void testTimestamp() {
+
+        String date = null;
+        try {
+            date = ProtoTyper.getTimestamp("先端発見!", "c88d8d0a6097754525e02c2246d8d27f");
+            System.out.println(date);
+        } catch (final Exception e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
+    }
 }
