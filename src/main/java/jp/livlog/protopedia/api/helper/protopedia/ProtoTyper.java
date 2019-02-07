@@ -70,7 +70,7 @@ public final class ProtoTyper {
         if (prototypes.size() == 0) {
             throw new NullPointerException();
         }
-        final Elements liTags = prototypes.get(0).getElementsByTag("li");
+        final Elements liTags = prototypes.get(0).getElementsByTag("ul").get(0).children();
 
         ProtoTypeData data = null;
         for (final Element liTag : liTags) {
