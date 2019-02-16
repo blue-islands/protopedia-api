@@ -20,8 +20,11 @@ public class ProtoTypeData {
     /** サムネイル. */
     private String thumb;
 
-    /** ボディ. */
-    private String body;
+    /** Body(HTML). */
+    private String bodyHtml;
+
+    /** Body(テキスト). */
+    private String bodyText;
 
     /** リンク. */
     private String link;
