@@ -13,6 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import jp.livlog.protopedia.api.servlet.ListServlet;
+import jp.livlog.protopedia.api.share.BreakUtil;
 import jp.livlog.protopedia.api.share.Parameters;
 
 /**
@@ -152,7 +153,7 @@ public final class ProtoTyper {
 
         // タイムスタンプ
         try {
-            final String timestamp = ProtoTyper.getTimestamp(data.getTitle(), protoTypeId);
+            final String timestamp = ProtoTyper.getTimestamp(data);
             data.setTimestamp(timestamp);
         } catch (final Exception e) {
             ProtoTyper.log.warn(e.getMessage(), e);
@@ -222,26 +223,37 @@ public final class ProtoTyper {
 
     /**
      * タイムスタンプを取得する.
-     * @param title タイトル
-     * @param protoTypeId プロトタイプID
+     * @param data プロトタイプ詳細データ
      * @return タイムスタンプ
      * @throws Exception 例外
      */
-    public static String getTimestamp(final String title, final String protoTypeId) throws Exception {
+    public static String getTimestamp(final ProtoTypeDetailData data) throws Exception {
+
+        final List <String> list = BreakUtil.convSentenceToRow(data.getBodyText());
+        String text = "";
+        for (final String val : list) {
+            if (val.length() > 0) {
+                text = val;
+                break;
+            }
+        }
+        if (text.length() > 20) {
+            text = text.substring(0, 20);
+        }
 
         // 指定のURLを生成
-        final String protoUrl = ProtoTyper.SUGGETS_URL + "/search/" + title;
+        final String protoUrl = ProtoTyper.SUGGETS_URL + "/search/" + text;
         ProtoTyper.log.info(protoUrl);
 
         // 検索結果を取得
         final Document document = Jsoup.connect(protoUrl).get();
         final Element content = document.getElementById("block-protopedia-content");
-        final Elements list = content.children();
-        for (int i = ProtoTyper.SEARCH_SKIP; i < list.size(); i = i + ProtoTyper.SEARCH_SKIP) {
-            final Element name = list.get(ProtoTyper.SEARCH_SKIP);
+        final Elements elements = content.children();
+        for (int i = ProtoTyper.SEARCH_SKIP; i < elements.size(); i = i + ProtoTyper.SEARCH_SKIP) {
+            final Element name = elements.get(ProtoTyper.SEARCH_SKIP);
             // final Element body = list.get(SEARCH_SKIP + 1);
-            final Element timestamp = list.get(ProtoTyper.SEARCH_SKIP + 2);
-            if (name.html().indexOf(protoTypeId) > -1) {
+            final Element timestamp = elements.get(ProtoTyper.SEARCH_SKIP + 2);
+            if (name.html().indexOf(data.getProtoTypeId()) > -1) {
                 final String[] array = timestamp.text().split("-");
                 return array[1].trim() + " " + array[2].trim();
             }
