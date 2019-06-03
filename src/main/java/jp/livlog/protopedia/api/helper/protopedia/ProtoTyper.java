@@ -57,6 +57,7 @@ public final class ProtoTyper {
         final Document document = Jsoup.connect(protoUrl).get();
         final Elements title = document.getElementsByTag("h1");
         final Elements status = document.getElementsByClass("field--name-field-status");
+        final Elements video = document.getElementsByAttribute("data-video-embed-field-lazy");
         final Elements images = document.getElementsByClass("slide");
         final Elements summary = document.getElementsByClass("field--type-text-with-summary");
         final Elements materials = document.getElementsByClass("field--name-field-materials");
@@ -76,6 +77,14 @@ public final class ProtoTyper {
         if (!status.isEmpty()) {
             final String statusText = status.get(0).text();
             data.setStatus(statusText);
+        }
+        // 動画
+        if (!video.isEmpty()) {
+            final String videoAttr = video.get(0).attr("data-video-embed-field-lazy");
+            final Document document2 = Jsoup.parse(videoAttr);
+            final Elements iframeTag = document2.getElementsByTag("iframe");
+            final String src = iframeTag.get(0).attr("src");
+            data.setVideo(src);
         }
         // イメージ
         if (!images.isEmpty()) {

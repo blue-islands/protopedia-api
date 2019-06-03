@@ -29,6 +29,9 @@ public class ProtoTypeDetailData {
     /** Body(テキスト). */
     private String               bodyText;
 
+    /** 動画. */
+    private String               video;
+
     /** イメージ. */
     private List <String>        images;
 
