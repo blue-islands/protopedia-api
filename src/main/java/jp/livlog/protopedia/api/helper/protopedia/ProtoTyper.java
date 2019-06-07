@@ -80,11 +80,15 @@ public final class ProtoTyper {
         }
         // 動画
         if (!video.isEmpty()) {
-            final String videoAttr = video.get(0).attr("data-video-embed-field-lazy");
-            final Document document2 = Jsoup.parse(videoAttr);
-            final Elements iframeTag = document2.getElementsByTag("iframe");
-            final String src = iframeTag.get(0).attr("src");
-            data.setVideo(src);
+            try {
+                final String videoAttr = video.get(0).attr("data-video-embed-field-lazy");
+                final Document document2 = Jsoup.parse(videoAttr);
+                final Elements iframeTag = document2.getElementsByTag("iframe");
+                final String src = iframeTag.get(0).attr("src");
+                data.setVideo(src);
+            } catch (final Exception e) {
+                log.error(e.getMessage(), e);
+            }
         }
         // イメージ
         if (!images.isEmpty()) {
