@@ -58,7 +58,10 @@ public final class ProtoTyper {
         final Elements title = document.getElementsByTag("h1");
         final Elements status = document.getElementsByClass("field--name-field-status");
         final Elements video = document.getElementsByAttribute("data-video-embed-field-lazy");
-        final Elements images = document.getElementsByClass("slide");
+        Elements images = document.getElementsByClass("slide");
+        if (images.isEmpty()) {
+            images = document.getElementsByClass("slick");
+        }
         final Elements summary = document.getElementsByClass("field--type-text-with-summary");
         final Elements materials = document.getElementsByClass("field--name-field-materials");
         final Elements tags = document.getElementsByClass("field--name-field-prototype-tags");
