@@ -1,9 +1,11 @@
 package jp.livlog.protopedia.api.helper.protopedia;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,9 +14,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import jp.livlog.helper.analysis.Morph;
+import jp.livlog.helper.analysis.PartItem;
 import jp.livlog.protopedia.api.servlet.ListServlet;
 import jp.livlog.protopedia.api.share.BreakUtil;
 import jp.livlog.protopedia.api.share.Parameters;
+import jp.livlog.utility.StringUtil;
+import jp.livlog.utility.Symbol;
 
 /**
  * プロトタイパークラス.
@@ -36,6 +42,11 @@ public final class ProtoTyper {
      * 検索用のスキップ.
      */
     private static final int    SEARCH_SKIP = 3;
+
+    /**
+     * 検索用のスキップ.
+     */
+    private static final Morph  morph       = Morph.getInstance();
 
 
     /**
@@ -90,7 +101,7 @@ public final class ProtoTyper {
                 final String src = iframeTag.get(0).attr("src");
                 data.setVideo(src);
             } catch (final Exception e) {
-                log.error(e.getMessage(), e);
+                ProtoTyper.log.error(e.getMessage(), e);
             }
         }
         // イメージ
@@ -169,10 +180,18 @@ public final class ProtoTyper {
 
         // タイムスタンプ
         try {
-            final String timestamp = ProtoTyper.getTimestamp(data);
+            String timestamp = ProtoTyper.getTimestamp(data);
+            if (timestamp == null) {
+                timestamp = ProtoTyper.getTimestamp2(data);
+            }
             data.setTimestamp(timestamp);
-        } catch (final Exception e) {
-            ProtoTyper.log.warn(e.getMessage(), e);
+        } catch (final Exception e1) {
+            try {
+                final String timestamp = ProtoTyper.getTimestamp2(data);
+                data.setTimestamp(timestamp);
+            } catch (final Exception e2) {
+                ProtoTyper.log.warn(e2.getMessage(), e2);
+            }
         }
 
         return data;
@@ -246,6 +265,7 @@ public final class ProtoTyper {
     public static String getTimestamp(final ProtoTypeDetailData data) throws Exception {
 
         final List <String> list = BreakUtil.convSentenceToRow(data.getBodyText());
+
         String text = "";
         for (final String val : list) {
             if (val.length() > 0) {
@@ -253,8 +273,52 @@ public final class ProtoTyper {
                 break;
             }
         }
-        if (text.length() > 20) {
-            text = text.substring(0, 20);
+        if (text.length() > Symbol.INT_15) {
+            text = text.substring(0, Symbol.INT_15);
+        }
+
+        // 指定のURLを生成
+        final String protoUrl = ProtoTyper.SUGGETS_URL + "/search/" + text.toString();
+        ProtoTyper.log.info(protoUrl);
+
+        // 検索結果を取得
+        final Document document = Jsoup.connect(protoUrl).get();
+        final Element content = document.getElementById("block-protopedia-content");
+        final Elements elements = content.children();
+        for (int i = ProtoTyper.SEARCH_SKIP; i < elements.size(); i = i + ProtoTyper.SEARCH_SKIP) {
+            final Element name = elements.get(ProtoTyper.SEARCH_SKIP);
+            // final Element body = list.get(SEARCH_SKIP + 1);
+            final Element timestamp = elements.get(ProtoTyper.SEARCH_SKIP + 2);
+            if (name.html().indexOf(data.getProtoTypeId()) > -1) {
+                final String[] array = timestamp.text().split("-");
+                return array[1].trim() + " " + array[2].trim();
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
+     * タイムスタンプを取得する.
+     * @param data プロトタイプ詳細データ
+     * @return タイムスタンプ
+     * @throws Exception 例外
+     */
+    public static String getTimestamp2(final ProtoTypeDetailData data) throws Exception {
+
+        final List <PartItem> parts = ProtoTyper.morph.analyze(data.getBodyText());
+        final Set <String> set = new HashSet <>();
+        for (final PartItem part : parts) {
+            if (ProtoTyper.morph.keyword(part)) {
+                // sb.append(part.getSurface() + Symbol.HANKAKU);
+                set.add(part.getSurface());
+            }
+        }
+
+        String text = StringUtil.setToStringLine(set, Symbol.HANKAKU);
+        if (text.length() > Symbol.INT_20) {
+            text = text.substring(0, Symbol.INT_20);
         }
 
         // 指定のURLを生成

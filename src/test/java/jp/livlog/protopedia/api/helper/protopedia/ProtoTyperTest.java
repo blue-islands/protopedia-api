@@ -12,7 +12,7 @@ public class ProtoTyperTest {
 
         ProtoTypeDetailData data = null;
         try {
-            data = ProtoTyper.getDetail("298f95e1bf9136124592c8d4825a06fc");
+            data = ProtoTyper.getDetail("2bb232c0b13c774965ef8558f0fbd615");
             // System.out.println(data);
             // data = ProtoTyper.getDetail("90599c8fdd2f6e7a03ad173e2f535751");
             System.out.println(data);
