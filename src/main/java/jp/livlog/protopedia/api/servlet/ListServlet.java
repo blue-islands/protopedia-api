@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import jp.livlog.protopedia.api.helper.protopedia.ProtoTypeData;
 import jp.livlog.protopedia.api.helper.protopedia.ProtoTyper;
 import jp.livlog.protopedia.api.share.APIServlet;
+import jp.livlog.utility.StringUtil;
 
 /**
  * プロトタイプリスト取得サーブレット.
@@ -31,10 +32,13 @@ import jp.livlog.protopedia.api.share.APIServlet;
 public class ListServlet extends jp.livlog.protopedia.api.share.APIServlet {
 
     /** シリアルバージョンUID. */
-    private static final long serialVersionUID = 1L;
+    private static final long   serialVersionUID    = 1L;
 
     /** Log. */
-    private static Log        log              = LogFactory.getLog(ListServlet.class);
+    private static Log          log                 = LogFactory.getLog(ListServlet.class);
+
+    /** 除外文字. */
+    private static final String EXCLUSION_CHARACTER = "_.'@";
 
 
     @Override
@@ -48,16 +52,16 @@ public class ListServlet extends jp.livlog.protopedia.api.share.APIServlet {
         req.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         // ユーザーID
-        final String user = req.getParameter("user");
+        String user = req.getParameter("user");
 
         if (StringUtils.isEmpty(user)) {
-            errors.getErrors().add(new jp.livlog.protopedia.api.share.Error(ERROR_10, APIServlet.ERROR_MAP.get(ERROR_10)));
+            errors.getErrors().add(new jp.livlog.protopedia.api.share.Error(APIServlet.ERROR_10, APIServlet.ERROR_MAP.get(APIServlet.ERROR_10)));
             this.print(req, res, errors);
             return;
         }
 
         try {
-
+            user = StringUtil.deleteCharacters(user, ListServlet.EXCLUSION_CHARACTER);
             final List <ProtoTypeData> all = new ArrayList <>();
             int i = 0;
             while (true) {
@@ -71,7 +75,7 @@ public class ListServlet extends jp.livlog.protopedia.api.share.APIServlet {
             }
 
             if (all.isEmpty()) {
-                errors.getErrors().add(new jp.livlog.protopedia.api.share.Error(ERROR_01, APIServlet.ERROR_MAP.get(ERROR_01)));
+                errors.getErrors().add(new jp.livlog.protopedia.api.share.Error(APIServlet.ERROR_01, APIServlet.ERROR_MAP.get(APIServlet.ERROR_01)));
                 this.print(req, res, errors);
                 return;
             }
@@ -82,7 +86,7 @@ public class ListServlet extends jp.livlog.protopedia.api.share.APIServlet {
 
         } catch (final Exception e) {
             ListServlet.log.error(e.getMessage(), e);
-            errors.getErrors().add(new jp.livlog.protopedia.api.share.Error(ERROR_99, APIServlet.ERROR_MAP.get(ERROR_99)));
+            errors.getErrors().add(new jp.livlog.protopedia.api.share.Error(APIServlet.ERROR_99, APIServlet.ERROR_MAP.get(APIServlet.ERROR_99)));
             this.print(req, res, errors);
         }
 
