@@ -19,7 +19,6 @@ import org.apache.commons.logging.LogFactory;
 import jp.livlog.protopedia.api.helper.protopedia.ProtoTypeData;
 import jp.livlog.protopedia.api.helper.protopedia.ProtoTyper;
 import jp.livlog.protopedia.api.share.APIServlet;
-import jp.livlog.utility.StringUtil;
 
 /**
  * プロトタイプリスト取得サーブレット.
@@ -32,13 +31,13 @@ import jp.livlog.utility.StringUtil;
 public class ListServlet extends jp.livlog.protopedia.api.share.APIServlet {
 
     /** シリアルバージョンUID. */
-    private static final long   serialVersionUID    = 1L;
+    private static final long serialVersionUID = 1L;
 
     /** Log. */
-    private static Log          log                 = LogFactory.getLog(ListServlet.class);
+    private static Log        log              = LogFactory.getLog(ListServlet.class);
 
-    /** 除外文字. */
-    private static final String EXCLUSION_CHARACTER = "_.'@";
+    // /** 除外文字. */
+    // private static final String EXCLUSION_CHARACTER = "_.'@";
 
 
     @Override
@@ -52,7 +51,7 @@ public class ListServlet extends jp.livlog.protopedia.api.share.APIServlet {
         req.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         // ユーザーID
-        String user = req.getParameter("user");
+        final String user = req.getParameter("user");
 
         if (StringUtils.isEmpty(user)) {
             errors.getErrors().add(new jp.livlog.protopedia.api.share.Error(APIServlet.ERROR_10, APIServlet.ERROR_MAP.get(APIServlet.ERROR_10)));
@@ -61,7 +60,7 @@ public class ListServlet extends jp.livlog.protopedia.api.share.APIServlet {
         }
 
         try {
-            user = StringUtil.deleteCharacters(user, ListServlet.EXCLUSION_CHARACTER);
+            // user = StringUtil.deleteCharacters(user, ListServlet.EXCLUSION_CHARACTER);
             final List <ProtoTypeData> all = new ArrayList <>();
             int i = 0;
             while (true) {
